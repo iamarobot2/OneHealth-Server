@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { format } = require("date-fns/format");
 
-const healthcareProviderSchema = new mongoose.Schema({
+const healthCareProviderSchema = new mongoose.Schema({
   personalInformation: {
     fullName: {
       type: String,
@@ -63,7 +63,12 @@ const healthcareProviderSchema = new mongoose.Schema({
     consultationHours: [String],
     consultationFees: Number
   },
+  role:
+    {
+      type: String,
+      default:"healthcareprovider"
+    }
 });
 
-const HealthcareProvider = mongoose.model("HealthcareProvider", healthcareProviderSchema);
-module.exports = HealthcareProvider;
+const HealthCareProvider = mongoose.model("HealthCareProvider", healthCareProviderSchema);
+module.exports = HealthCareProvider;

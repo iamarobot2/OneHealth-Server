@@ -1,10 +1,13 @@
 const User = require("../models/User");
+const HealthCareProvider = require("../models/HealthCareProvider");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 async function userSignup(req, res) {
   try {
-    const duplicate = await User.findOne({ email: req.body.accountInformation.email })
+    const duplicate = await User.findOne({
+      email: req.body.accountInformation.email,
+    })
       .lean()
       .exec();
     if (duplicate) {
@@ -22,9 +25,32 @@ async function userSignup(req, res) {
   }
 }
 
+async function hcpSignup(req, res) {
+  try {
+    const duplicate = await HealthCareProvider.findOne({
+      email: req.body.accountInformation.email,
+    })
+      .lean()
+      .exec();
+    if (duplicate) {
+      return res.status(409).json({ message: "User already exists !" });
+    }
+    const salt = await bcrypt.genSaltSync(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    req.body.password = hashedPassword;
+    const newHCP = new HealthCareProvider(req.body);
+    await newHCP.save();
+    res.status(201).json({ message: "User created successfully!" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "An Erorr Occured during Signup" });
+  }
+}
+
 async function Login(req, res) {
   try {
-    const user = await User.findOne({ email: req.body.email }).exec();
+    const Model = req.body.role;
+    const user = await Model.findOne({ email: req.body.email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
@@ -40,7 +66,7 @@ async function Login(req, res) {
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "1m",
+        expiresIn: "5m",
       }
     );
 
@@ -50,7 +76,7 @@ async function Login(req, res) {
       },
       process.env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: "2m",
+        expiresIn: "10m",
       }
     );
 
@@ -58,7 +84,7 @@ async function Login(req, res) {
       secure: true,
       httpOnly: true,
       sameSite: "none",
-      maxAge: 1000 * 60 * 2,
+      maxAge: 1000 * 60 * 10,
     });
     console.log(`${user.name} logged in at ${new Date().toISOString()}`);
     res.status(200).json({ accessToken, message: "Logged In Successfully" });
@@ -88,7 +114,7 @@ async function Refresh(req, res) {
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-          expiresIn: "1m",
+          expiresIn: "5m",
         }
       );
       res.json({ accessToken });
@@ -107,4 +133,4 @@ async function Logout(req, res) {
   res.json({ message: "Logged Out Successfully" });
 }
 
-module.exports = { userSignup, Login, Refresh, Logout };
+module.exports = { userSignup, hcpSignup, Login, Refresh, Logout };
