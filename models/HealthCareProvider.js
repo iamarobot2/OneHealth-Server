@@ -16,23 +16,21 @@ const healthCareProviderSchema = new mongoose.Schema({
     gender: {
       type: String,
       required: true,
-      enum: ["male", "female", "other"]
+      enum: ["male", "female", "other"],
     },
     contactNumber: {
       type: String,
       required: true,
     },
   },
-  accountInformation: {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
   },
   professionalInformation: {
     specialization: {
@@ -44,13 +42,12 @@ const healthCareProviderSchema = new mongoose.Schema({
       required: true,
     },
     workExperience: Number,
-    clinicHospitalDetails: 
-    [
-        {
-            name:String,
-            address:String,
-        }
-    ]
+    clinicHospitalDetails: [
+      {
+        name: String,
+        address: String,
+      },
+    ],
   },
   addressInformation: {
     clinicHospitalAddress: String,
@@ -61,14 +58,16 @@ const healthCareProviderSchema = new mongoose.Schema({
   },
   consultationInformation: {
     consultationHours: [String],
-    consultationFees: Number
+    consultationFees: Number,
   },
-  role:
-    {
-      type: String,
-      default:"healthcareprovider"
-    }
+  role: {
+    type: String,
+    default: "healthcareprovider",
+  },
 });
 
-const HealthCareProvider = mongoose.model("HealthCareProvider", healthCareProviderSchema);
+const HealthCareProvider = mongoose.model(
+  "HealthCareProvider",
+  healthCareProviderSchema
+);
 module.exports = HealthCareProvider;

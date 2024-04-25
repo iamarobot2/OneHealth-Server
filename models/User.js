@@ -12,48 +12,68 @@ const userSchema = mongoose.Schema(
         type: Date,
         required: true,
         min: "1900-01-01",
-        max: format(new Date(), "yyyy-MM-dd")
+        max: format(new Date(), "yyyy-MM-dd"),
       },
       gender: {
         type: String,
         required: true,
-        enum: ["male", "female", "other"]
+        enum: ["male", "female", "other"],
       },
       contactNumber: {
         type: String,
         required: true,
       },
     },
-    accountInformation: {
-      email: {
-        type: String,
-        required: true,
-        unique: true
-      },
-      password: {
-        type: String,
-        required: true
-      }
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
     },
     addressInformation: {
       residentialAddress: String,
       city: String,
       state: String,
       country: String,
-      postalCode: String
+      postalCode: String,
     },
     medicalInformation: {
-      bloodGroup: String,
-      knownAllergies: [String],
-      chronicDiseases: [String],
-      currentMedications: [String],
-      pastSurgeriesOrHospitalizations: [String]
+      bloodGroup: {
+        type: String,
+        required: true,
+      },
+      knownAllergies: [
+        {
+          type: String,
+          default: null,
+        },
+      ],
+      chronicDiseases: [
+        {
+          type: String,
+          default: null,
+        },
+      ],
+      currentMedications: [
+        {
+          type: String,
+          default: null,
+        },
+      ],
+      pastSurgeriesOrHospitalizations: [
+        {
+          type: String,
+          default: null,
+        },
+      ],
     },
-    role:
-    {
+    role: {
       type: String,
-      default:"user"
-    }
+      default: "user",
+    },
   },
   {
     timestamps: true,

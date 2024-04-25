@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {
-  Login,
+  userLogin,
   userSignup,
   Refresh,
   Logout,
@@ -10,8 +10,8 @@ const {
 const loginLimitter = require("../middleware/loginLimiter");
 
 router.get("/refresh", Refresh);
-router.post("/login", loginLimitter, Login);
-router.post("/signup/user", userSignup);
+router.post("/login/user", loginLimitter, userLogin);
+router.post("/signup", userSignup);
 router.post("/signup/hcp", hcpSignup);
 router.post("/logout", Logout);
 

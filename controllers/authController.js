@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 async function userSignup(req, res) {
   try {
     const duplicate = await User.findOne({
-      email: req.body.accountInformation.email,
+      email: req.body.email,
     })
       .lean()
       .exec();
@@ -14,7 +14,10 @@ async function userSignup(req, res) {
       return res.status(409).json({ message: "User already exists !" });
     }
     const salt = await bcrypt.genSaltSync(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const hashedPassword = await bcrypt.hash(
+      req.body.password,
+      salt
+    );
     req.body.password = hashedPassword;
     const newUser = new User(req.body);
     await newUser.save();
@@ -47,14 +50,16 @@ async function hcpSignup(req, res) {
   }
 }
 
-async function Login(req, res) {
+async function userLogin(req, res) {
   try {
-    const Model = req.body.role;
-    const user = await Model.findOne({ email: req.body.email }).exec();
+    const user = await User.findOne({ email: req.body.email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
-    const isValid = await bcrypt.compare(req.body.password, user.password);
+    const isValid = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
     if (!isValid) {
       return res.status(401).json({ message: "Invalid Email or Password" });
     }
@@ -133,4 +138,4 @@ async function Logout(req, res) {
   res.json({ message: "Logged Out Successfully" });
 }
 
-module.exports = { userSignup, hcpSignup, Login, Refresh, Logout };
+module.exports = { userSignup, hcpSignup, userLogin, Refresh, Logout };
