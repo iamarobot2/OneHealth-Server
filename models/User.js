@@ -3,26 +3,20 @@ const { format } = require("date-fns/format");
 
 const userSchema = mongoose.Schema(
   {
-    personalInformation: {
-      fullName: {
-        type: String,
-        required: true,
-      },
-      dateOfBirth: {
-        type: Date,
-        required: true,
-        min: "1900-01-01",
-        max: format(new Date(), "yyyy-MM-dd"),
-      },
-      gender: {
-        type: String,
-        required: true,
-        enum: ["male", "female", "other"],
-      },
-      contactNumber: {
-        type: String,
-        required: true,
-      },
+    fullname: {
+      type: String,
+      required: true,
+    },
+    dob: {
+      type: Date,
+      required: true,
+      min: "1900-01-01",
+      max: format(new Date(), "yyyy-MM-dd"),
+    },
+    gender: {
+      type: String,
+      required: true,
+      enum: ["male", "female", "other"],
     },
     email: {
       type: String,
@@ -33,14 +27,30 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    addressInformation: {
-      residentialAddress: String,
-      city: String,
-      state: String,
-      country: String,
-      postalCode: String,
+    contactnumber: {
+      type: String,
+      required: true,
     },
-    medicalInformation: {
+    address: {
+      residentialaddress: String,
+      state: String,
+      district: String,
+      postalcode: String,
+    },
+    role: {
+      type: String,
+      default: "user",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const User = mongoose.model("User", userSchema);
+module.exports = User;
+/*
+medicalInformation: {
       bloodGroup: {
         type: String,
         required: true,
@@ -69,16 +79,4 @@ const userSchema = mongoose.Schema(
           default: null,
         },
       ],
-    },
-    role: {
-      type: String,
-      default: "user",
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+    },*/
