@@ -33,9 +33,18 @@ const userSchema = mongoose.Schema(
     },
     address: {
       residentialaddress: String,
-      state: String,
-      district: String,
-      postalcode: String,
+      state: {
+        type: String,
+        required: true,
+      },
+      district: {
+        type: String,
+        required: true,
+      },
+      pincode: {
+        type: String,
+        required: true,
+      },
     },
     role: {
       type: String,

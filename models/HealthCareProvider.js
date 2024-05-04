@@ -2,26 +2,20 @@ const mongoose = require("mongoose");
 const { format } = require("date-fns/format");
 
 const healthCareProviderSchema = new mongoose.Schema({
-  personalInformation: {
-    fullName: {
-      type: String,
-      required: true,
-    },
-    dateOfBirth: {
-      type: Date,
-      required: true,
-      min: "1900-01-01",
-      max: format(new Date(), "yyyy-MM-dd"),
-    },
-    gender: {
-      type: String,
-      required: true,
-      enum: ["male", "female", "other"],
-    },
-    contactNumber: {
-      type: String,
-      required: true,
-    },
+  fullname: {
+    type: String,
+    required: true,
+  },
+  dob: {
+    type: Date,
+    required: true,
+    min: "1900-01-01",
+    max: format(new Date(), "yyyy-MM-dd"),
+  },
+  gender: {
+    type: String,
+    required: true,
+    enum: ["male", "female", "other"],
   },
   email: {
     type: String,
@@ -29,6 +23,10 @@ const healthCareProviderSchema = new mongoose.Schema({
     unique: true,
   },
   password: {
+    type: String,
+    required: true,
+  },
+  contactnumber: {
     type: String,
     required: true,
   },
@@ -42,23 +40,18 @@ const healthCareProviderSchema = new mongoose.Schema({
       required: true,
     },
     workExperience: Number,
-    clinicHospitalDetails: [
+    workplaces: [
       {
         name: String,
         address: String,
       },
     ],
   },
-  addressInformation: {
-    clinicHospitalAddress: String,
-    city: String,
+  workaddress: {
+    address: String,
     state: String,
-    country: String,
+    district:String,
     postalCode: String,
-  },
-  consultationInformation: {
-    consultationHours: [String],
-    consultationFees: Number,
   },
   role: {
     type: String,
