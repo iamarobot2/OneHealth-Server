@@ -14,10 +14,7 @@ async function userSignup(req, res) {
       return res.status(409).json({ message: "User already exists !" });
     }
     const salt = await bcrypt.genSaltSync(10);
-    const hashedPassword = await bcrypt.hash(
-      req.body.password,
-      salt
-    );
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
     req.body.password = hashedPassword;
     const newUser = new User(req.body);
     await newUser.save();
@@ -56,10 +53,7 @@ async function userLogin(req, res) {
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
-    const isValid = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
+    const isValid = await bcrypt.compare(req.body.password, user.password);
     if (!isValid) {
       return res.status(401).json({ message: "Invalid Email or Password" });
     }
@@ -92,7 +86,11 @@ async function userLogin(req, res) {
       maxAge: 1000 * 60 * 10,
     });
     console.log(`${user.name} logged in at ${new Date().toISOString()}`);
-    res.status(200).json({ accessToken, message: "Logged In Successfully" });
+    res.status(200).json({
+      accessToken,
+      message: "Logged In Successfully",
+      role: user.role,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "An Error Occurred during Login" });
