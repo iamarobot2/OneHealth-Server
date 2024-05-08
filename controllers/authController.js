@@ -90,6 +90,7 @@ async function userLogin(req, res) {
       accessToken,
       message: "Logged In Successfully",
       role: user.role,
+      user:user._id
     });
   } catch (err) {
     console.error(err);
