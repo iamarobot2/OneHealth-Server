@@ -2,6 +2,8 @@ const User = require("../models/User");
 const HealthCareProvider = require("../models/HealthCareProvider");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 async function userSignup(req, res) {
   try {
@@ -58,6 +60,55 @@ async function userLogin(req, res) {
       return res.status(401).json({ message: "Invalid Email or Password" });
     }
 
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpHash = await bcrypt.hash(otp, 10);
+    user.otp = otp;
+    user.otpHash = otpHash;
+    user.otpExpires = new Date(Date.now() + 10 * 60000);
+    await user.save();
+
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "One Health Login OTP",
+      text: `Your OTP code  for login is ${otp} . It is only valid for 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      message: "OTP sent to email",
+      userId: user._id,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An Error Occurred during Login" });
+  }
+}
+
+async function verifyOTP(req, res) {
+  try {
+    const { email, otp } = req.body;
+    console.log(req.body)
+    const user = await User.findOne({email}).exec();
+    if (!user) {
+      return res.status(404).json({ message: "User Not Found" });
+    }
+    if (user.otpExpires < new Date()) {
+      return res.status(400).json({ message: "OTP expired" });
+    }
+    const isOtpValid = await bcrypt.compare(otp, user.otpHash);
+    if (!isOtpValid) {
+      return res.status(401).json({ message: "Invalid OTP" });
+    }
     const accessToken = jwt.sign(
       {
         userId: user._id,
@@ -68,7 +119,6 @@ async function userLogin(req, res) {
         expiresIn: "5m",
       }
     );
-
     const refreshToken = jwt.sign(
       {
         userId: user._id,
@@ -90,7 +140,7 @@ async function userLogin(req, res) {
       accessToken,
       message: "Logged In Successfully",
       role: user.role,
-      user:user._id
+      user: user._id,
     });
   } catch (err) {
     console.error(err);
@@ -137,4 +187,4 @@ async function Logout(req, res) {
   res.json({ message: "Logged Out Successfully" });
 }
 
-module.exports = { userSignup, hcpSignup, userLogin, Refresh, Logout };
+module.exports = { userSignup, hcpSignup, userLogin, verifyOTP, Refresh, Logout };
