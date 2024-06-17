@@ -135,7 +135,7 @@ async function verifyOTP(req, res) {
       sameSite: "none",
       maxAge: 1000 * 60 * 10,
     });
-    console.log(`${user.name} logged in at ${new Date().toISOString()}`);
+    console.log(`${user.fullname} logged in at ${new Date().toISOString()}`);
     res.status(200).json({
       accessToken,
       message: "Logged In Successfully",
