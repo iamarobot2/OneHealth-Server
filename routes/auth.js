@@ -10,7 +10,7 @@ const {
 } = require("../controllers/authController");
 const loginLimitter = require("../middleware/loginLimiter");
 
-router.get("/refresh", Refresh);
+router.post("/refresh", Refresh);
 router.post("/login/user", loginLimitter, userLogin);
 router.post("/verify-otp", verifyOTP)
 router.post("/signup", userSignup);

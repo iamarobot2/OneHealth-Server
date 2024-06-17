@@ -97,8 +97,8 @@ async function userLogin(req, res) {
 async function verifyOTP(req, res) {
   try {
     const { email, otp } = req.body;
-    console.log(req.body)
-    const user = await User.findOne({email}).exec();
+    console.log(req.body);
+    const user = await User.findOne({ email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
@@ -129,18 +129,19 @@ async function verifyOTP(req, res) {
       }
     );
 
-    res.cookie("jwttoken", refreshToken, {
-      secure: process.env.NODE_ENV === 'production', 
-      httpOnly: true,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 1000 * 60 * 10,
-    });
+    // res.cookie("jwttoken", refreshToken, {
+    //   secure: process.env.NODE_ENV === 'production',
+    //   httpOnly: true,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    //   maxAge: 1000 * 60 * 10,
+    // });
     console.log(`${user.fullname} logged in at ${new Date().toISOString()}`);
     res.status(200).json({
       accessToken,
       message: "Logged In Successfully",
       role: user.role,
       user: user._id,
+      refreshToken,
     });
   } catch (err) {
     console.error(err);
@@ -149,11 +150,8 @@ async function verifyOTP(req, res) {
 }
 
 async function Refresh(req, res) {
-  const cookies = req.cookies;
-  if (!cookies?.jwttoken)
-    return res.status(401).json({ message: "Unauthorized" });
-  const refreshToken = cookies.jwttoken;
-
+  const refreshToken = req.body
+  if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
   jwt.verify(
     refreshToken,
     process.env.REFRESH_TOKEN_SECRET,
@@ -177,14 +175,14 @@ async function Refresh(req, res) {
 }
 
 async function Logout(req, res) {
-  const cookies = req.cookies;
-  if (!cookies?.jwttoken) return res.sendStatus(204);
-  res.clearCookie("jwttoken", {
-    secure: true,
-    httpOnly: true,
-    sameSite: "none",
-  });
   res.json({ message: "Logged Out Successfully" });
 }
 
-module.exports = { userSignup, hcpSignup, userLogin, verifyOTP, Refresh, Logout };
+module.exports = {
+  userSignup,
+  hcpSignup,
+  userLogin,
+  verifyOTP,
+  Refresh,
+  Logout,
+};
