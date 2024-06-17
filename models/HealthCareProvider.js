@@ -30,27 +30,17 @@ const healthCareProviderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  professionalInformation: {
-    specialization: {
-      type: String,
-      required: true,
-    },
-    medicalLicenseNumber: {
-      type: String,
-      required: true,
-    },
-    workExperience: Number,
-    workplaces: [
-      {
-        name: String,
-        address: String,
-      },
-    ],
+  specialization: {
+    type: String,
+    required: true,
+  },
+  medicalLicenseNumber: {
+    type: String,
   },
   workaddress: {
     address: String,
     state: String,
-    district:String,
+    district: String,
     postalCode: String,
   },
   role: {

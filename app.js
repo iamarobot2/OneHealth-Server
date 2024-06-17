@@ -11,6 +11,7 @@ const errorHandler = require("./middleware/errorHandler");
 const mongoose = require("mongoose");
 const passport = require("./config/passportConfig");
 const authRoutes = require("./routes/auth");
+const appointmentRoutes = require("./routes/appointment")
 const port = process.env.PORT || 4500;
 
 connectDB();
@@ -34,6 +35,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/auth", authRoutes);
+app.use("/appointment", appointmentRoutes)
 app.use(errorHandler);
 
 app.get("/", (req, res) => {
