@@ -23,8 +23,12 @@ app.use(
   session({
     secret: process.env.ACCESS_TOKEN_SECRET,
     resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 60000 },
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'none',
+    },
   })
 );
 app.use(passport.initialize());
