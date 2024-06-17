@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const HealthCareProvider = require("../models/HealthCareProvider");
+const Hcp = require("../models/HealthCareProvider")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -30,8 +30,8 @@ async function userSignup(req, res) {
 
 async function hcpSignup(req, res) {
   try {
-    const duplicate = await HealthCareProvider.findOne({
-      email: req.body.accountInformation.email,
+    const duplicate = await Hcp.findOne({
+      email: req.body.email,
     })
       .lean()
       .exec();
@@ -41,7 +41,7 @@ async function hcpSignup(req, res) {
     const salt = await bcrypt.genSaltSync(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
     req.body.password = hashedPassword;
-    const newHCP = new HealthCareProvider(req.body);
+    const newHCP = new Hcp(req.body);
     await newHCP.save();
     res.status(201).json({ message: "User created successfully!" });
   } catch (err) {
@@ -50,13 +50,15 @@ async function hcpSignup(req, res) {
   }
 }
 
-async function userLogin(req, res) {
+async function Login(req, res) {
   try {
-    const user = await User.findOne({ email: req.body.email }).exec();
+    const { email, password, role } = req.body;
+    const Model = role === 'healthcareprovider' ? Hcp : User;
+    const user = await Model.findOne({ email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
-    const isValid = await bcrypt.compare(req.body.password, user.password);
+    const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return res.status(401).json({ message: "Invalid Email or Password" });
     }
@@ -97,9 +99,9 @@ async function userLogin(req, res) {
 
 async function verifyOTP(req, res) {
   try {
-    const { email, otp } = req.body;
-    console.log(req.body);
-    const user = await User.findOne({ email }).exec();
+    const { email, otp , role } = req.body;
+    const Model = role === 'healthcareprovider' ? Hcp : User;
+    const user = await Model.findOne({ email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
@@ -185,7 +187,7 @@ async function Logout(req, res) {
 module.exports = {
   userSignup,
   hcpSignup,
-  userLogin,
+  Login,
   verifyOTP,
   Refresh,
   Logout,
