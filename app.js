@@ -1,6 +1,5 @@
 require("dotenv").config({ path: "./config/.env" });
 const express = require("express");
-const session = require("express-session");
 const app = express();
 const connectDB = require("./config/db");
 const cors = require("cors");
@@ -9,9 +8,10 @@ const cookieParser = require("cookie-parser");
 const { logger, logEvents } = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const mongoose = require("mongoose");
-const passport = require("./config/passportConfig");
 const authRoutes = require("./routes/auth");
 const appointmentRoutes = require("./routes/appointment")
+const verifyJWT = require('./middleware/verifyJWT')
+
 const port = process.env.PORT || 4500;
 
 connectDB();
@@ -20,22 +20,20 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(
-  session({
-    secret: process.env.ACCESS_TOKEN_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      sameSite: 'none',
-    },
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(
+//   session({
+//     secret: process.env.ACCESS_TOKEN_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       secure: true,
+//       httpOnly: true,
+//       sameSite: 'strict',
+//     },
+//   })
+// );
 app.use("/auth", authRoutes);
-app.use("/appointment", appointmentRoutes)
+app.use("/appointment",verifyJWT, appointmentRoutes)
 app.use(errorHandler);
 
 app.get("/", (req, res) => {

@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const path = require("path");
 
 async function userSignup(req, res) {
   try {
@@ -116,7 +117,7 @@ async function verifyOTP(req, res) {
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "5m",
+        expiresIn: "10m",
       }
     );
     const refreshToken = jwt.sign(
@@ -125,23 +126,24 @@ async function verifyOTP(req, res) {
       },
       process.env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: "10m",
+        expiresIn: "60m",
       }
     );
-
-    // res.cookie("jwttoken", refreshToken, {
-    //   secure: process.env.NODE_ENV === 'production',
-    //   httpOnly: true,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    //   maxAge: 1000 * 60 * 10,
-    // });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      path: "/refresh",
+    });
     console.log(`${user.fullname} logged in at ${new Date().toISOString()}`);
     res.status(200).json({
-      accessToken,
       message: "Logged In Successfully",
-      role: user.role,
-      user: user._id,
-      refreshToken,
+      user: user,
     });
   } catch (err) {
     console.error(err);
@@ -150,7 +152,7 @@ async function verifyOTP(req, res) {
 }
 
 async function Refresh(req, res) {
-  const refreshToken = req.body.refreshToken
+  const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
   jwt.verify(
     refreshToken,
@@ -166,7 +168,7 @@ async function Refresh(req, res) {
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-          expiresIn: "5m",
+          expiresIn: "10m",
         }
       );
       res.json({ accessToken });
@@ -175,7 +177,9 @@ async function Refresh(req, res) {
 }
 
 async function Logout(req, res) {
-  res.json({ message: "Logged Out Successfully" });
+  res.clearCookie("accessToken", { path: "/" });
+  res.clearCookie("refreshToken", { path: "/refresh" });
+  return res.json({ message: "Logged Out Successfully" });
 }
 
 module.exports = {
