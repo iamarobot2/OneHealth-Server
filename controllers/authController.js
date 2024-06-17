@@ -150,7 +150,7 @@ async function verifyOTP(req, res) {
 }
 
 async function Refresh(req, res) {
-  const refreshToken = req.body
+  const refreshToken = req.body.refreshToken
   if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
   jwt.verify(
     refreshToken,
