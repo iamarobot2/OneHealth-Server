@@ -1,19 +1,19 @@
 const mongoose = require('mongoose');
 
 const medicalRecordSchema = new mongoose.Schema({
+  appointment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Appointment',
+    required: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
-  addedBy: {
+  hcp: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
-    required: true,
-  },
-  appointment: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Appointment',
+    ref: 'HealthCareProvider',
     required: true,
   },
   date: {

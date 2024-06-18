@@ -1,15 +1,14 @@
 const express = require("express");
+const router = express.Router();
 const {
-  getMedicalRecords,
   createMedicalRecord,
+  getMedicalRecords,
   updateMedicalRecord,
   deleteMedicalRecord,
 } = require("../controllers/medicalRecordController");
 
-const router = express.Router();
-
-router.get("/:appointmentId", getMedicalRecords);
 router.post("/", createMedicalRecord);
+router.get("/:appointmentId", getMedicalRecords);
 router.put("/:recordId", updateMedicalRecord);
 router.delete("/:recordId", deleteMedicalRecord);
 

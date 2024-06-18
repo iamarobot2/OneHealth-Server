@@ -1,16 +1,6 @@
-const MedicalRecord = require("../models/MedicalRecord");
+const MedicalRecord = require('../models/MedicalRecord');
 
-exports.getMedicalRecords = async (req, res) => {
-  try {
-    const { appointmentId } = req.params;
-    const records = await MedicalRecord.find({ appointment: appointmentId }).populate("addedBy", "fullname");
-    res.status(200).json(records);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to get medical records", error });
-  }
-};
-
-exports.createMedicalRecord = async (req, res) => {
+const createMedicalRecord = async (req, res) => {
   try {
     const record = new MedicalRecord(req.body);
     await record.save();
@@ -20,11 +10,20 @@ exports.createMedicalRecord = async (req, res) => {
   }
 };
 
-exports.updateMedicalRecord = async (req, res) => {
+const getMedicalRecords = async (req, res) => {
   try {
-    const { recordId } = req.params;
-    const updates = req.body;
-    const record = await MedicalRecord.findByIdAndUpdate(recordId, updates, { new: true });
+    const records = await MedicalRecord.find({ appointment: req.params.appointmentId })
+      .populate('user', 'fullname')
+      .populate('hcp', 'fullname');
+    res.status(200).json(records);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch medical records", error });
+  }
+};
+
+const updateMedicalRecord = async (req, res) => {
+  try {
+    const record = await MedicalRecord.findByIdAndUpdate(req.params.recordId, req.body, { new: true });
     if (!record) return res.status(404).json({ message: "Medical record not found" });
     res.status(200).json({ message: "Medical record updated successfully", record });
   } catch (error) {
@@ -32,12 +31,19 @@ exports.updateMedicalRecord = async (req, res) => {
   }
 };
 
-exports.deleteMedicalRecord = async (req, res) => {
+const deleteMedicalRecord = async (req, res) => {
   try {
-    const { recordId } = req.params;
-    await MedicalRecord.findByIdAndDelete(recordId);
+    const record = await MedicalRecord.findByIdAndDelete(req.params.recordId);
+    if (!record) return res.status(404).json({ message: "Medical record not found" });
     res.status(200).json({ message: "Medical record deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete medical record", error });
   }
+};
+
+module.exports = {
+  createMedicalRecord,
+  getMedicalRecords,
+  updateMedicalRecord,
+  deleteMedicalRecord,
 };
