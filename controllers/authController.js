@@ -67,7 +67,8 @@ async function Login(req, res) {
     const otpHash = await bcrypt.hash(otp, 10);
     user.otp = otp;
     user.otpHash = otpHash;
-    user.otpExpires = new Date(Date.now() + 10 * 60000);
+    user.otpExpires = new Date(Date.now() + 10 * 60000); // Ensure 10 minutes
+
     await user.save();
 
     const transporter = nodemailer.createTransport({
@@ -82,7 +83,7 @@ async function Login(req, res) {
       from: process.env.EMAIL_USER,
       to: user.email,
       subject: "One Health Login OTP",
-      text: `Your OTP code  for login is ${otp} . It is only valid for 10 minutes.`,
+      text: `Your OTP code for login is ${otp}. It is only valid for 10 minutes.`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -97,15 +98,16 @@ async function Login(req, res) {
   }
 }
 
+
 async function verifyOTP(req, res) {
   try {
-    const { email, otp , role } = req.body;
+    const { email, otp, role } = req.body;
     const Model = role === 'healthcareprovider' ? Hcp : User;
     const user = await Model.findOne({ email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
-    if (user.otpExpires < new Date()) {
+    if (new Date() > user.otpExpires) { // Correctly check expiration
       return res.status(400).json({ message: "OTP expired" });
     }
     const isOtpValid = await bcrypt.compare(otp, user.otpHash);
@@ -152,6 +154,7 @@ async function verifyOTP(req, res) {
     res.status(500).json({ message: "An Error Occurred during Login" });
   }
 }
+
 
 async function Refresh(req, res) {
   const refreshToken = req.cookies.refreshToken;

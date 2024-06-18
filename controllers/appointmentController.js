@@ -47,13 +47,14 @@ const getUserAppointments = async (req, res) => {
     const { userId } = req.params;
     const appointments = await Appointment.find({ user: userId }).populate(
       "doctor",
-      "fullname specialization"
+      "fullname specialization workaddress"
     );
     res.status(200).json(appointments);
   } catch (error) {
     res.status(500).json({ message: "Failed to get user appointments", error });
   }
 };
+
 
 const getDoctorAppointments = async (req, res) => {
   try {
