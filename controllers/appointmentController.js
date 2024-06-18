@@ -6,12 +6,10 @@ const createAppointment = async (req, res) => {
 
     console.log("Received data: ", { userId, doctorId, appointmentDate, appointmentTime });
 
-    // Validate inputs
-    if (!doctorId) {
-      return res.status(400).json({ message: 'Doctor ID is required' });
-    }
-    if (!appointmentTime) {
-      return res.status(400).json({ message: 'Appointment time is required' });
+    // Ensure date is in DDMMYYYY format
+    const datePattern = /^\d{2}\d{2}\d{4}$/;
+    if (!datePattern.test(appointmentDate)) {
+      return res.status(400).json({ message: 'Invalid date format' });
     }
 
     // Check if the user already has an appointment with the doctor on the same day
@@ -75,26 +73,29 @@ const getDoctorAppointments = async (req, res) => {
 const updateAppointment = async (req, res) => {
   try {
     const { appointmentId } = req.params;
-    const { appointmentDate, appointmentTime } = req.body;
+    const updates = req.body;
 
+    // Fetch the appointment to check its current status
     const appointment = await Appointment.findById(appointmentId);
-    if (!appointment) return res.status(404).json({ message: 'Appointment not found' });
+    if (!appointment)
+      return res.status(404).json({ message: "Appointment not found" });
 
-    if (['completed', 'accepted'].includes(appointment.status)) {
-      return res.status(403).json({ message: 'Cannot update a completed or accepted appointment' });
+    if (["completed", "accepted"].includes(appointment.status)) {
+      return res
+        .status(403)
+        .json({ message: "Cannot update a completed or accepted appointment" });
     }
 
-    appointment.appointmentDate = appointmentDate;
-    appointment.appointmentTime = appointmentTime;
-
+    Object.assign(appointment, updates);
     await appointment.save();
 
-    res.status(200).json({ message: 'Appointment updated successfully', appointment });
+    res
+      .status(200)
+      .json({ message: "Appointment updated successfully", appointment });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update appointment', error });
+    res.status(500).json({ message: "Failed to update appointment", error });
   }
 };
-
 
 const deleteAppointment = async (req, res) => {
   try {
