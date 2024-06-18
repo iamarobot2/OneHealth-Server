@@ -15,7 +15,6 @@ const appointmentRoutes = require("./routes/appointment")
 const hcpRoutes = require("./routes/hcp")
 const userRoutes = require("./routes/user")
 const medicalRecordRoutes = require("./routes/medicalrecords");
-const emailRoutes = require("./routes/email");
 
 const port = process.env.PORT || 4500;
 
@@ -41,6 +40,7 @@ app.use("/auth", authRoutes);
 app.use("/appointment", appointmentRoutes)
 app.use("/hcps" , hcpRoutes)
 app.use("/users",userRoutes)
+app.use("/medical-records", medicalRecordRoutes)
 app.use(errorHandler);
 
 app.get("/", (req, res) => {
