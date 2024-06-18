@@ -136,7 +136,7 @@ const deleteAppointment = async (req, res) => {
     if (!appointment)
       return res.status(404).json({ message: "Appointment not found" });
 
-    if (["completed", "accepted"].includes(appointment.status)) {
+    if (["accepted"].includes(appointment.status)) {
       return res
         .status(403)
         .json({ message: "Cannot delete a completed or accepted appointment" });
