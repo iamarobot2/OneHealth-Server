@@ -5,16 +5,16 @@ const {
   createAppointment,
   getUserAppointments,
   getDoctorAppointments,
-  updateAppointment,
+  updateUserAppointment,
+  updateHcpAppointment,
   deleteAppointment,
 } = require('../controllers/appointmentController');
-
 
 router.post('/', createAppointment);
 router.get('/user/:userId', getUserAppointments);
 router.get('/doctor/:doctorId', getDoctorAppointments);
-router.put('/:appointmentId', updateAppointment);
+router.put('/user/:appointmentId', authenticateUser, updateUserAppointment);
+router.put('/hcp/:appointmentId', authenticateHcp, updateHcpAppointment);
 router.delete('/:appointmentId', deleteAppointment);
-
 
 module.exports = router;

@@ -75,20 +75,46 @@ const getDoctorAppointments = async (req, res) => {
   }
 };
 
-const updateAppointment = async (req, res) => {
+const updateUserAppointment = async (req, res) => {
   try {
     const { appointmentId } = req.params;
     const updates = req.body;
 
-    // Fetch the appointment to check its current status
     const appointment = await Appointment.findById(appointmentId);
     if (!appointment)
       return res.status(404).json({ message: "Appointment not found" });
 
-    if (["completed", "accepted"].includes(appointment.status)) {
-      return res
-        .status(403)
-        .json({ message: "Cannot update a completed or accepted appointment" });
+    if (["completed", "accepted", "rejected"].includes(appointment.status)) {
+      return res.status(403).json({
+        message:
+          "Users cannot update a completed, accepted, or rejected appointment",
+      });
+    }
+
+    Object.assign(appointment, updates);
+    await appointment.save();
+
+    res
+      .status(200)
+      .json({ message: "Appointment updated successfully", appointment });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update appointment", error });
+  }
+};
+
+const updateHcpAppointment = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    const updates = req.body;
+
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment)
+      return res.status(404).json({ message: "Appointment not found" });
+
+    if (["completed", "rejected"].includes(appointment.status)) {
+      return res.status(403).json({
+        message: "HCPs cannot update a completed or rejected appointment",
+      });
     }
 
     Object.assign(appointment, updates);
@@ -106,7 +132,6 @@ const deleteAppointment = async (req, res) => {
   try {
     const { appointmentId } = req.params;
 
-    // Fetch the appointment to check its current status
     const appointment = await Appointment.findById(appointmentId);
     if (!appointment)
       return res.status(404).json({ message: "Appointment not found" });
@@ -128,6 +153,7 @@ module.exports = {
   createAppointment,
   getUserAppointments,
   getDoctorAppointments,
-  updateAppointment,
+  updateUserAppointment,
+  updateHcpAppointment,
   deleteAppointment,
 };
