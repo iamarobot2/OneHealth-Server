@@ -13,8 +13,8 @@ const {
 router.post('/', createAppointment);
 router.get('/user/:userId', getUserAppointments);
 router.get('/doctor/:doctorId', getDoctorAppointments);
-router.put('/user/:appointmentId', authenticateUser, updateUserAppointment);
-router.put('/hcp/:appointmentId', authenticateHcp, updateHcpAppointment);
+router.put('/user/:appointmentId', updateUserAppointment);
+router.put('/hcp/:appointmentId', updateHcpAppointment);
 router.delete('/:appointmentId', deleteAppointment);
 
 module.exports = router;
