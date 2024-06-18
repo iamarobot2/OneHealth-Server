@@ -12,17 +12,18 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   appointmentDate: {
-    type: Date,
+    type: String,
     required: true,
+  },
+  appointmentTime:
+  {
+    type:String,
+    required: true
   },
   status: {
     type: String,
     enum: ["pending", "accepted", "rejected", "completed"],
     default: "pending",
-  },
-  notes: {
-    type: String,
-    default: "",
   },
 }, { timestamps: true });
 

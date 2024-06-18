@@ -1,5 +1,6 @@
 require("dotenv").config({ path: "./config/.env" });
 const express = require("express");
+const session = require("express-session")
 const app = express();
 const connectDB = require("./config/db");
 const cors = require("cors");
@@ -8,9 +9,11 @@ const cookieParser = require("cookie-parser");
 const { logger, logEvents } = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const mongoose = require("mongoose");
+// const verifyJWT = require('./middleware/verifyJWT')
 const authRoutes = require("./routes/auth");
 const appointmentRoutes = require("./routes/appointment")
-const verifyJWT = require('./middleware/verifyJWT')
+const hcpRoutes = require("./routes/hcp")
+const userRoutes = require("./routes/user")
 
 const port = process.env.PORT || 4500;
 
@@ -20,20 +23,22 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(
-//   session({
-//     secret: process.env.ACCESS_TOKEN_SECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//       secure: true,
-//       httpOnly: true,
-//       sameSite: 'strict',
-//     },
-//   })
-// );
+ app.use(
+   session({
+     secret: process.env.ACCESS_TOKEN_SECRET,
+     resave: false,
+     saveUninitialized: false,
+     cookie: {
+       secure: true,
+       httpOnly: true,
+       sameSite: 'strict',
+     },
+   })
+ );
 app.use("/auth", authRoutes);
-app.use("/appointment",verifyJWT, appointmentRoutes)
+app.use("/appointment", appointmentRoutes)
+app.use("/hcps" , hcpRoutes)
+app.use("/users",userRoutes)
 app.use(errorHandler);
 
 app.get("/", (req, res) => {

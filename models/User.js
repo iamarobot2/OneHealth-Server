@@ -18,6 +18,11 @@ const userSchema = mongoose.Schema(
       required: true,
       enum: ["male", "female", "other"],
     },
+    bloodgroup: {
+      type: String,
+      required: true,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    },
     email: {
       type: String,
       required: true,
