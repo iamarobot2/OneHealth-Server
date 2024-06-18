@@ -1,11 +1,4 @@
-// models/MedicalRecord.js
 const mongoose = require('mongoose');
-
-const fileSchema = new mongoose.Schema({
-  filename: String,
-  filetype: String,
-  url: String,
-});
 
 const medicalRecordSchema = new mongoose.Schema({
   user: {
@@ -15,7 +8,12 @@ const medicalRecordSchema = new mongoose.Schema({
   },
   addedBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Can be User or HealthCareProvider
+    ref: 'User', 
+    required: true,
+  },
+  appointment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Appointment',
     required: true,
   },
   date: {
@@ -37,7 +35,6 @@ const medicalRecordSchema = new mongoose.Schema({
     heartRate: String,
     respirationRate: String,
   },
-  files: [fileSchema],
 }, { timestamps: true });
 
 const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema);
