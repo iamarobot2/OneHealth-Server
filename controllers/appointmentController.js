@@ -1,5 +1,4 @@
 const Appointment = require("../models/Appointment");
-const dayjs = require("dayjs")
 
 const createAppointment = async (req, res) => {
   try {
@@ -11,20 +10,8 @@ const createAppointment = async (req, res) => {
     if (!doctorId) {
       return res.status(400).json({ message: 'Doctor ID is required' });
     }
-    if (!appointmentDate || !appointmentTime) {
-      return res.status(400).json({ message: 'Both appointment date and time are required' });
-    }
-
-    // Ensure the appointmentDate is a valid date in the format 'DDMMYYYY'
-    const parsedDate = dayjs(appointmentDate, 'DDMMYYYY');
-    if (!parsedDate.isValid()) {
-      return res.status(400).json({ message: 'Invalid appointment date format' });
-    }
-
-    // Ensure the appointmentTime is a valid time in the format 'hh:mm A'
-    const parsedTime = dayjs(appointmentTime, 'hh:mm A');
-    if (!parsedTime.isValid()) {
-      return res.status(400).json({ message: 'Invalid appointment time format' });
+    if (!appointmentTime) {
+      return res.status(400).json({ message: 'Appointment time is required' });
     }
 
     // Check if the user already has an appointment with the doctor on the same day
