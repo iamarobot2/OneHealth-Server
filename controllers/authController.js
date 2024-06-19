@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const Hcp = require("../models/HealthCareProvider")
+const Hcp = require("../models/HealthCareProvider");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -53,7 +53,7 @@ async function hcpSignup(req, res) {
 async function Login(req, res) {
   try {
     const { email, password, role } = req.body;
-    const Model = role === 'healthcareprovider' ? Hcp : User;
+    const Model = role === "healthcareprovider" ? Hcp : User;
     const user = await Model.findOne({ email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
@@ -98,16 +98,16 @@ async function Login(req, res) {
   }
 }
 
-
 async function verifyOTP(req, res) {
   try {
     const { email, otp, role } = req.body;
-    const Model = role === 'healthcareprovider' ? Hcp : User;
+    const Model = role === "healthcareprovider" ? Hcp : User;
     const user = await Model.findOne({ email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
-    if (new Date() > user.otpExpires) { // Correctly check expiration
+    if (new Date() > user.otpExpires) {
+      // Correctly check expiration
       return res.status(400).json({ message: "OTP expired" });
     }
     const isOtpValid = await bcrypt.compare(otp, user.otpHash);
@@ -147,14 +147,23 @@ async function verifyOTP(req, res) {
     console.log(`${user.fullname} logged in at ${new Date().toISOString()}`);
     res.status(200).json({
       message: "Logged In Successfully",
-      user: user,
+      user: {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role,
+        dob: user.dob,
+        gender:user.gender,
+        bloodgroup : user.bloodgroup,
+        contactnumber : user.contactnumber,
+        address : user.address
+      },
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "An Error Occurred during Login" });
   }
 }
-
 
 async function Refresh(req, res) {
   const refreshToken = req.cookies.refreshToken;
@@ -176,7 +185,11 @@ async function Refresh(req, res) {
           expiresIn: "10m",
         }
       );
-      res.json({ accessToken });
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
     }
   );
 }

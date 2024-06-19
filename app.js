@@ -1,6 +1,6 @@
 require("dotenv").config({ path: "./config/.env" });
 const express = require("express");
-const session = require("express-session")
+const session = require("express-session");
 const app = express();
 const connectDB = require("./config/db");
 const cors = require("cors");
@@ -11,10 +11,11 @@ const errorHandler = require("./middleware/errorHandler");
 const mongoose = require("mongoose");
 // const verifyJWT = require('./middleware/verifyJWT')
 const authRoutes = require("./routes/auth");
-const appointmentRoutes = require("./routes/appointment")
-const hcpRoutes = require("./routes/hcp")
-const userRoutes = require("./routes/user")
+const appointmentRoutes = require("./routes/appointment");
+const hcpRoutes = require("./routes/hcp");
+const userRoutes = require("./routes/user");
 const medicalRecordRoutes = require("./routes/medicalrecords");
+const verifyJWT = require("./middleware/verifyJWT");
 
 const port = process.env.PORT || 4500;
 
@@ -24,23 +25,23 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
- app.use(
-   session({
-     secret: process.env.ACCESS_TOKEN_SECRET,
-     resave: false,
-     saveUninitialized: false,
-     cookie: {
-       secure: true,
-       httpOnly: true,
-       sameSite: 'strict',
-     },
-   })
- );
+app.use(
+  session({
+    secret: process.env.ACCESS_TOKEN_SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+      secure: true,
+      httpOnly: true,
+      sameSite: "strict",
+    },
+  })
+);
 app.use("/auth", authRoutes);
-app.use("/appointment", appointmentRoutes)
-app.use("/hcps" , hcpRoutes)
-app.use("/users",userRoutes)
-app.use("/medical-records", medicalRecordRoutes)
+app.use("/appointment", verifyJWT, appointmentRoutes);
+app.use("/hcps", verifyJWT, hcpRoutes);
+app.use("/users", verifyJWT, userRoutes);
+app.use("/medical-records", verifyJWT, medicalRecordRoutes);
 app.use(errorHandler);
 
 app.get("/", (req, res) => {
