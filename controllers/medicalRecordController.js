@@ -45,9 +45,25 @@ const deleteMedicalRecord = async (req, res) => {
   }
 };
 
+const getMedicalRecordsByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const records = await MedicalRecord.find({ 'appointment.user': userId })
+      .populate('appointment', 'appointmentDate appointmentTime')
+      .populate('appointment.user', 'fullname')
+      .populate('appointment.doctor', 'fullname specialization');
+
+    res.status(200).json(records);
+  } catch (error) {
+    console.error("Error fetching medical records by user:", error);
+    res.status(500).json({ message: "Failed to fetch medical records by user", error });
+  }
+};
+
 module.exports = {
   createMedicalRecord,
   getMedicalRecords,
   updateMedicalRecord,
   deleteMedicalRecord,
+  getMedicalRecordsByUser,
 };

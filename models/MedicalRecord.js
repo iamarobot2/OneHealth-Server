@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const { default: mongoose } = require("mongoose");
+const { User } = require("../models/User");
 
 const medicalRecordSchema = new mongoose.Schema({
   appointment: {
