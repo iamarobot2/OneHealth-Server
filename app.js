@@ -38,10 +38,10 @@ app.use(
   })
 );
 app.use("/auth", authRoutes);
-app.use("/appointment", verifyJWT, appointmentRoutes);
-app.use("/hcps", verifyJWT, hcpRoutes);
-app.use("/users", verifyJWT, userRoutes);
-app.use("/medical-records", verifyJWT, medicalRecordRoutes);
+app.use("/appointment", appointmentRoutes);
+app.use("/hcps", hcpRoutes);
+app.use("/users", userRoutes);
+app.use("/medical-records", medicalRecordRoutes);
 app.use(errorHandler);
 
 app.get("/", (req, res) => {
