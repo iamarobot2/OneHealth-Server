@@ -102,7 +102,7 @@ async function verifyOTP(req, res) {
   try {
     const { email, otp, role } = req.body;
     const Model = role === "healthcareprovider" ? Hcp : User;
-    const user = await Model.findOne({ email }).select("-password otp otpHash otpExpires").exec();
+    const user = await Model.findOne({ email }).exec();
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
