@@ -6,16 +6,6 @@ const medicalRecordSchema = new mongoose.Schema({
     ref: 'Appointment',
     required: true,
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  hcp: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'HealthCareProvider',
-    required: true,
-  },
   date: {
     type: Date,
     required: true,
