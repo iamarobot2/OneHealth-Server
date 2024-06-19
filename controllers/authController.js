@@ -147,17 +147,7 @@ async function verifyOTP(req, res) {
     console.log(`${user.fullname} logged in at ${new Date().toISOString()}`);
     res.status(200).json({
       message: "Logged In Successfully",
-      user: {
-        _id: user._id,
-        fullname: user.fullname,
-        email: user.email,
-        role: user.role,
-        dob: user.dob,
-        gender:user.gender,
-        bloodgroup : user.bloodgroup,
-        contactnumber : user.contactnumber,
-        address : user.address
-      },
+      user: user
     });
   } catch (err) {
     console.error(err);
