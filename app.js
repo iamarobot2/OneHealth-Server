@@ -15,7 +15,6 @@ const appointmentRoutes = require("./routes/appointment");
 const hcpRoutes = require("./routes/hcp");
 const userRoutes = require("./routes/user");
 const medicalRecordRoutes = require("./routes/medicalrecords");
-const verifyJWT = require("./middleware/verifyJWT");
 
 const port = process.env.PORT || 4500;
 
